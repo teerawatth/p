@@ -1,0 +1,405 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block site_title %}แดชบอร์ด{% endblock %}
+{% block content %}
+<div class="container>
+    {% if total < 1 %}
+      <div class=" container w-50 d-flex align-items-center" style="height: 360px">
+  <div class="card bg-light shadow w-100 text-center p-5" style="height: 180px;">
+    <h4>Hello {{ user }}</h4>
+    <p>**ขณะนี้ยังไม่มีการทำนายผล</p>
+    <a href="{% url 'predict_for_admin' %}" class="mt-3">
+      <span><i data-feather="chevrons-left"></i></span>
+      <span>ไปยังหน้าทำนายผลการสำเร็จการศึกษา</span>
+    </a>
+  </div>
+</div>
+{% else %}
+{% if user.is_superuser or user.is_staff %}
+<div class="container">
+  <div class="row" style="height: 40px;">
+    <h4>หน้าแรก</h4>
+  </div>
+  <div class="row">
+    <div class="col-12 col-md-12 col-lg-4">
+      <div class="card p-2 shadow" style="min-height: 396px">
+        <p style="font-size:14px;">
+          <strong>สาขาวิชาที่ผลการทำนายมีแนวโน้มสำเร็จการศึกษามากที่สุด</strong> 
+        </p>
+        <div class="container w-75">
+          <div class="row">
+            {% for x in mydict|dictsortreversed:"percentage_pass" %}
+            <table class="table">
+              <tr>
+                <th style="width: 10%;">#{{ forloop.counter }}</th>
+                <td>
+                  <div class="row">
+                    <div class="col-8">
+                      <strong>{{ x.branch }}</strong>
+                    </div>
+                    <div class="col-4 text-end">
+                      <strong>{{ x.percentage_pass }}&#37</strong>
+                    </div>
+                  </div>
+                  <div class="progress p-0">
+                    <div class="progress-bar" role="progressbar" style="width: {{ x.percentage_pass }}%; background: #E4B490;"
+                      aria-valuenow="{{ x.percentage_pass }}" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+            <!-- <p>
+            <div class="row">
+              <div class="col-8">
+                <strong>{{ x.branch }}</strong>
+              </div>
+              <div class="col-4 text-end">
+                <strong>{{ x.percentage_pass }}&#37</strong>
+              </div>
+            </div>
+            <div class="progress p-0">
+              <div class="progress-bar" role="progressbar" style="width: {{ x.percentage_pass }}%; background: #E4B490;"
+                aria-valuenow="{{ x.percentage_pass }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            </p> -->
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-12 col-lg-8 bg-light shadow">
+      <p>
+        <strong>ภาพรวมของระบบ</strong>
+      </p>
+      <div class="row p-2">
+        <div class="col-12 col-lg-6">
+          <div class="row  d-flex justify-content-center">
+            <div class="chart-container" style="position: relative; height: 300px; width: 300px">
+              <canvas id="donut_chart"></canvas>
+              <script>
+                const ctx1 = document.getElementById("donut_chart").getContext("2d");
+                const chart = new Chart(ctx1, {
+                  type: "doughnut",
+                  data: {
+                    labels: [{% for i in mydict %} '{{ i.branch }}', {% endfor %}],
+                datasets: [
+                  {
+                    backgroundColor: ['#9ADCFF', '#FFF89A', '#FFB2A6', '#FF8AAE'],
+                    data: [{% for i in mydict %} {{ i.total }}, {% endfor %}]
+                                }
+                              ],
+                hoverOffset: 4
+                            },
+                options: {
+                  plugins: {
+                    legend: {
+                      display: false,
+                                },
+                  }
+                },
+                responsive: true,
+                  maintainAspectRatio: true,
+                          });
+              </script>
+            </div>
+          </div>
+          <div class="row d-flex justify-content-center text-center">
+            <div class="container">
+              <p>
+                <strong>ข้อมูลทั้งหมด {{ total }} ข้อมูล </strong>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-6">
+          {% for x in mydict|dictsortreversed:"total" %}
+          {% if x.branch == 'BIO' %}
+          <p>
+          <div class="row">
+            <div class="col-8">
+              ชีววิทยา ({{ x.branch }})
+            </div>
+            <div class="col-4 text-end">
+              <strong>{{ x.total }}</strong> ({{ x.amount }}&#37)
+            </div>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: {{ x.amount }}%; background: #9ADCFF;"
+              aria-valuenow="{{ x.amount }}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </p>
+          {% elif x.branch == 'CHEM' %}
+          <p>
+          <div class="row">
+            <div class="col-8">
+              เคมี ({{ x.branch }})
+            </div>
+            <div class="col-4 text-end">
+              <strong>{{ x.total }}</strong> ({{ x.amount }}&#37)
+            </div>
+          </div>
+          <div class="progress" id="progress1">
+            <div class="progress-bar" role="progressbar"
+              style="width: {{ x.amount }}%; background: #FFF89A;"" aria-valuenow=" {{ x.amount }}" aria-valuemin="0"
+              aria-valuemax="100"></div>
+          </div>
+          </p>
+          {% elif x.branch == 'DSSI' %}
+          <p>
+          <div class="row">
+            <div class="col-8">
+              วิทยาการข้อมูลและนวัตกรรมซอฟต์แวร์ ({{ x.branch }})
+            </div>
+            <div class="col-4 text-end">
+              <strong>{{ x.total }}</strong> ({{ x.amount }}&#37)
+            </div>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar"
+              style="width: {{ x.amount }}%; background: #FFB2A6;"" aria-valuenow=" {{ x.amount }}" aria-valuemin="0"
+              aria-valuemax="100"></div>
+          </div>
+          </p>
+          {% else %}
+          <p>
+          <div class="row">
+            <div class="col-8">
+              เทคโนโลยีสารสนเทศและการสื่อสาร ({{ x.branch }})
+            </div>
+            <div class="col-4 text-end">
+              <strong>{{ x.total }}</strong> ({{ x.amount }}&#37)
+            </div>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar"
+              style="width: {{ x.amount }}%; background: #FF8AAE;"" aria-valuenow=" {{ x.amount }}" aria-valuemin="0"
+              aria-valuemax="100"></div>
+          </div>
+          </p>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-12 col-md-12 col-lg-6">
+      <div class="card shadow p-2 bg-light" style="border: 0;">
+        <p>
+          <strong>
+            ข้อมูลแยกตามผลการทำนาย
+          </strong>
+        </p>
+        <div class="row text-center">
+          <div class="col-6">
+            <p>มีแนวโน้มสำเร็จการศึกษา</p>
+            <div class="container-skill d-flex justify-content-center">
+              <div class="skill">
+                <div class="outer">
+                  <div class="inner">
+                    <div class="number" data-num="{{ per_pass }}"></div>
+                  </div>
+                </div>
+                <svg width="160px" height="160px">
+                  <circle cx="80" cy="80" r="70" stroke-linecap="round"></circle>
+                </svg>
+              </div>
+            </div>
+            <p>ข้อมูลทั้งหมด {{ total_pass }} ข้อมูล</p>
+          </div>
+          <div class="col-6">
+            <p>มีแนวโน้มไม่สำเร็จการศึกษา</p>
+            <div class="skill-container d-flex justify-content-center">
+              <div class="skill">
+                <div class="outer">
+                  <div class="inner">
+                    <div class="number" data-num="{{ per_fail }}"><span>%</span> </div>
+                  </div>
+                </div>
+                <svg width="160px" height="160px">
+                  <circle cx="80" cy="80" r="70" stroke-linecap="round"></circle>
+                </svg>
+              </div>
+            </div>
+            <p>ข้อมูลทั้งหมด {{ total_fail }} ข้อมูล</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-12 col-lg-6 p-2">
+      <p>
+        <strong>
+          ตารางสรุปผลการทำนายในแต่ละสาขา
+        </strong>
+      </p>
+      <table class="table table-sm text-center">
+        <thead class="bg-light">
+          <tr>
+            <th scope="col">สาขา</th>
+            <th colspan="2" scope="col">จำนวนข้อมูล</th>
+            <th colspan="2" scope="col"></th>
+          </tr>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">มีแนวโน้มสำเร็จการศึกษา</th>
+            <th scope="col">มีแนวโน้มไม่สำเร็จการศึกษา</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in mydict %}
+          <tr>
+            <td>{{ i.branch }}</td>
+            <td>{{ i.total_pass }}</td>
+            <td>{{ i.total_fail }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+{% else %}
+  <div class="container">
+    <div class="row" style="height: 40px;">
+      <h4>{{ user.branch }} <strong>({{ user.branch.abbreviation }})</strong></h4>
+    </div>
+    <hr>
+    <div class="container">
+      <div class="row">
+        <p>
+          <strong>
+            ภาพรวม
+          </strong>
+        </p>
+        {% for i in mydict %}
+          {% if user.branch.abbreviation == i.branch %}
+            <div class="col-12 col-lg-4 col-md-12">
+              <div class="customCardTeacherOne">
+                <div class="card p-3 shadow">
+                  <div class="row">
+                    <div class="container-skill-amount d-flex justify-content-center">
+                      <div class="skill">
+                        <div class="outer">
+                          <div class="inner">
+                            <div class="number" data-num="{{ i.amount }}"></div>
+                          </div>
+                        </div>
+                        <svg width="160px" height="160px">
+                          <circle cx="80" cy="80" r="70" stroke-linecap="round"></circle>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row d-flex align-items-end text-center pt-2">
+                    <p>นักศึกษาทั้งหมด {{ i.total }} คน</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-4 col-md-12">
+              <div class="customCardTeacherOne">
+                <div class="card p-3 shadow">
+                  <div class="row">
+                    <div class="container-skill d-flex justify-content-center">
+                      <div class="skill">
+                        <div class="outer">
+                          <div class="inner">
+                            <div class="number" data-num="{{ i.percentage_pass }}"></div>
+                          </div>
+                        </div>
+                        <svg width="160px" height="160px">
+                          <circle cx="80" cy="80" r="70" stroke-linecap="round"></circle>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row d-flex align-items-end text-center pt-2">
+                    <p>นักศึกษาที่มีแนวโน้มสำเร็จการศึกษา {{ i.total_pass }} คน</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-4 col-md-12">
+              <div class="customCardTeacherOne">
+                <div class="card p-3 shadow">
+                  <div class="row">
+                    <div class="skill-container d-flex justify-content-center">
+                      <div class="skill">
+                        <div class="outer">
+                          <div class="inner">
+                            <div class="number" data-num="{{ i.percentage_fail }}"></div>
+                          </div>
+                        </div>
+                        <svg width="160px" height="160px">
+                          <circle cx="80" cy="80" r="70" stroke-linecap="round"></circle>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row d-flex align-items-end text-center pt-2">
+                    <p>นักศึกษาที่มีแนวโน้มไม่สำเร็จการศึกษา {{ i.total_fail }} คน</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="row mt-3">
+        <div class="col-12 col-md-12 col-lg-6">
+          <div class="customCradChartLeft shadow">
+            <p>
+              <strong>
+                เปรียบเทียบผลการทำนายแต่ละสาขาวิขา
+              </strong>
+            </p>
+            <canvas id="myChart"></canvas>
+                <script>
+                  const ctx = document.getElementById('myChart');
+                  new Chart(ctx, {
+                    data: {
+                      datasets: [{
+                        type: 'bar',
+                        label: 'มีแนวโน้มสำเร็จการศึกษา(%)',
+                        data: [{% for i in mydict %} {{ i.percentage_pass }}, {% endfor %}],
+                        backgroundColor: ['#B3E5BE'],
+                      }, 
+                      {
+                        type: 'bar',
+                        label: 'มีแนวโน้มไม่สำเร็จการศึกษา(%)',
+                        data: [{% for j in mydict %} {{ j.percentage_fail }}, {% endfor %}],
+                        backgroundColor: ['#FF597B'],
+                      }],
+                      labels: [{% for m in mydict %} '{{ m.branch }}', {% endfor %}]
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                      }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: true,
+                  });
+                </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endif %}
+</div>
+<script>
+  const numbers = document.querySelectorAll('.number');
+  const svgEl = document.querySelectorAll('svg circle');
+
+  for (var i = 0; i < numbers.length; i++) {
+    numbers[i].innerHTML = numbers[i].dataset.num + "%";
+    svgEl[i].style.strokeDashoffset = Math.floor(472 - 440 * parseFloat(numbers[i].dataset.num / 100));
+  }
+</script>
+{% endblock %}

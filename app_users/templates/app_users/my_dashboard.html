@@ -1,0 +1,18 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block site_title %}Home welcome{% endblock %}
+{% block content %}
+    <div class="container">
+      <div class="row">
+        <span class="col-auto">
+          <img src="{% static 'app_general/img/loader.gif' %}" alt="gif" style="width: 120px; height:auto;" />
+        </span>
+        <span class="col-auto d-flex align-items-center">
+          <div>
+            <h2>Hello <strong class="text-uppercase">{{ user.username }}</strong></h2>
+            <h5>ยินดีตอนรับเข้าสู่ระบบทำนายการสำเร็จการศึกษา</h5>
+          </div>
+        </span>
+      </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block site_title %}ประวัติการทำนาย{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="container">
+        <div class="row mb-2">
+            <div class="col-9">
+                <h5>ประวัติผลการทำนายของคุณ</h5>
+            </div>
+            <div class="col-3">
+                <a href="{% url 'form' %}">
+                    <button class="btn btn-primary" title="predict">
+                        <i data-feather="feather"></i> ทำนายผลอีกครั้ง
+                    </button>
+                </a>
+            </div>
+        </div>
+        <hr>
+        <div class="row" >
+            <div class="container w-100">
+                <table class="table table-hover" id="myTable">
+                    <thead class="bg-light">
+                        <th scope="col">วันที่ทำนาย</th>
+                        <th scope="col">รหัสนักศึกษา</th>
+                        <th scope="col">สาขา</th>
+                        <th scope="col">ผลการทำนาย</th>
+                        <th scope="col">ความน่าจะเป็น</th>
+                        <th scope="col"></th>
+
+                    </thead>
+                    <tbody>
+                        {% for i in data %}
+                        <tr>
+                            <td>
+                                <p>{{ i.predict_at|date:'j N Y | H:i' }}</p>
+                            </td>
+                            <td>
+                                <p>{{ i.student_id }}</p>
+                            </td>
+                            <td>
+                                <p>{{ i.branch.name }}</p>
+                            </td>
+                            {% if i.status == 'Pass' %}
+                            <td class="text-success fw-bold">
+                                <p>มีแนวโน้มสำเร็จการศึกษา</p>
+                            </td>
+                            {% else %}
+                            <td class="text-danger fw-bold">
+                                <p>มีแนวโน้มไม่สำเร็จการศึกษา</p>
+                            </td>
+                            {% endif %}
+                            <td>
+                                {% if i.probability_pass > i.probability_fail %}
+                                {{ i.probability_pass }}&#37;
+                                {% else %}
+                                {{ i.probability_fail }}&#37;
+                                {% endif %}
+                            <td>
+                                <a href="{% url 'history_item' i.id %}" class="btn btn-light text-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{i.id}}" title="ดูรายละเอียด">
+                                    <i data-feather="file"></i>
+                                </a>
+
+                                <!-- Modal detail history item -->
+                                <div class="modal fade" id="exampleModal{{i.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                        <div class="modal-content text-dark">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">รายละเอียดข้อมูล</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <table class="table w-100" style="border: #fff;">
+                                                        <tr>
+                                                            <th class="ps-4">วันที่ทำนาย</th>
+                                                            <td>
+                                                                {{ i.predict_at|date:'j N Y | H:i' }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">รหัสนักศึกษา</th>
+                                                            <td>
+                                                                {{ i.student_id }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">สาขาวิชา</th>
+                                                            <td>
+                                                                {{ i.branch.name }}
+                                                            </td>
+                                                    
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">เกรดรับเข้า</th>
+                                                            <td>
+                                                                {{ i.admission_grade }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">เกรดปีที่ 1</th>
+                                                            <td>
+                                                                {{ i.gpa_year_1 }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">ภาษาไทย</th>
+                                                            <td>
+                                                                {{ i.thai }}
+                                                            </td>
+                                                    
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">คณิตศาสตร์</th>
+                                                            <td>
+                                                                {{ i.math }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">วิทยาศาสตร์</th>
+                                                            <td>
+                                                                {{ i.sci}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">สังคมศึกษา</th>
+                                                            <td>
+                                                                {{ i.society }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">สุขศึกษา</th>
+                                                            <td>
+                                                                {{ i.hygiene }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">ศิลปะ</th>
+                                                            <td>
+                                                                {{ i.art }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">การงานอาชีพ</th>
+                                                            <td>
+                                                                {{ i.career }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="ps-4">ภาษาต่างประเทศ</th>
+                                                            <td>
+                                                                {{ i.language }}
+                                                            </td>
+                                                        </tr>
+                                                    
+                                                    </table>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="modal-footer text-center">
+                                                {% if i.status == 'Pass' %}
+                                                    <div class="container shadow">
+                                                        <h4 class="text-success"> <strong>มีแนวโน้มสำเร็จการศึกษา {{ i.probability_pass }} &#37;</strong> </h4>
+                                                    </div>
+                                                {% else%}
+                                                    <div class="container shadow">
+                                                        <h4 class="text-danger"> <strong>มีแนวโน้มไม่สำเร็จการศึกษา {{ i.probability_fail }} &#37;</strong> </h4>
+                                                    </div>
+                                                {% endif %}
+                                                
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+        <script>
+            $(document).ready(function () {
+                $('#myTable').DataTable(
+                  {
+                    language:{
+                        "emptyTable": "ไม่มีข้อมูลในตาราง",
+                        "info": "แสดงผล _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+                        "infoEmpty": "แสดงผล 0 ถึง 0 จากทั้งหมด 0 รายการ",
+                        "infoFiltered": "(กรองจากทั้งหมด _MAX_ รายการ)",
+                        "lengthMenu": "แสดง _MENU_ รายการ",
+                        "loadingRecords": "กำลังโหลด...",
+                        "processing": "กำลังประมวลผล...",
+                        "search": "ค้นหา:",
+                        "zeroRecords": "ไม่พบรายการที่ตรงกับการค้นหา",
+                        "paginate": {
+                          "first": "หน้าแรก",
+                          "last": "หน้าสุดท้าย",
+                          "next": "ถัดไป",
+                          "previous": "ก่อนหน้า"
+                        }
+                    }
+                }
+                );
+            });
+        </script>
+    </div>
+
+
+{% endblock %}

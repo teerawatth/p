@@ -1,0 +1,56 @@
+{% extends 'app_users/components/base.html' %}
+{% load static %}
+{% block site_title %}เข้าสู่ระบบ{% endblock %}
+{% block content %}
+    <div class="customLoginLayout">
+       <div class="customCardLogin shadow">
+            <div class="cardHeader">
+                <div class="row">
+                    <img src="{% static 'app_general/img/login.gif' %}" alt="img">
+                </div>
+                <div class="row">
+                    <h5>
+                        <strong>ระบบทำนายผลการสำเร็จการศึกษา</strong>
+                    </h5>
+                </div>
+                <div class="row">
+                    <div class="cardContent">
+                        <form action="{% url 'login' %}" method="post">
+                            {% csrf_token %}
+                            
+                            <div class="text-danger">{{ form.non_field_errors }}</div>
+                            <div class="formInput">
+                                <div class="form-outline mb-4">
+                                    <label class="form-label" for="id_username">ชื่อผู้ใช้</label>
+                                    <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username" class="form-control"/>
+                                </div>
+
+                                <div class="form-outline mb-4">
+                                    <label class="form-label" for="id_password">รหัสผ่าน</label>
+                                    <input type="password" name="password" autocomplete="current-password" required id="id_password" class="form-control" />
+                                    
+                                </div>
+                            </div>
+                            <div class="formButton mb-4">
+                                <button class="btn btn-primary shadow" type="submit">เข้าสู่ระบบ</button>
+                            </div>
+                            <div class="formFooter">
+                                <a class="small text-muted" href="{% url 'password_reset' %}">ลืมรหัสผ่าน?</a>
+                                <p>
+                                    ยังไม่มีบัญชี? 
+                                    <a href="{% url 'register' %}">ลงทะเบียน</a>
+                                </p>
+                                {% if request.GET.next %}
+                                    <input type="hidden" name="next" value="{{ request.GET.next }}">
+                                {% else %}
+                                {% endif %}
+                            </div>
+                        </form>  
+                    </div>
+                    
+                </div>
+            </div>
+       </div>
+        
+    </div>
+{% endblock %}

@@ -1,0 +1,314 @@
+{% extends 'app_general/components/base.html' %}
+{% block site_title %}ผลลัพธ์การทำนาย{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <h3>ผลลัพธ์การทำนาย</h3>
+  </div>
+  <hr>
+  <div class="container">
+    <div class="container w-100">
+      <div class="row">
+        <div class="col-12 col-md-12 col-lg-6">
+          <p>
+            <strong>ข้อมูลทั้งหมด {{ total }} ข้อมูล</strong> <br>
+            ข้อมูลที่มีแนวโน้มสำเร็จการศึกษา {{ total_pass }} ข้อมูล <br>
+            ข้อมูลที่มีแนวโน้มไม่สำเร็จการศึกษา {{ total_fail }} ข้อมูล
+          </p>
+          <!-- <div class="container text-dark text-start">
+            <p>
+                <strong>ปัจจัยที่มีผลต่อการทำนาย:</strong>
+                {% for i in mylist|slice:3 %}
+                  {% if i == 'admission_grade' %}
+                  เกรดเฉลี่ยรับเข้า, 
+                  {% elif i == 'gpa_year_1' %}
+                  เกรดเฉลี่ยปี1, 
+                  {% elif i == 'thai' %}
+                  เกรดภาษาไทย, 
+                  {% elif i == 'math' %}
+                  เกรดคณิตศาสตร์, 
+                  {% elif i == 'sci' %}
+                  เกรดวิทยาศาสตร์, 
+                  {% elif i == 'society' %}
+                  เกรดสังคมศึกษา, 
+                  {% elif i == 'hygiene' %}
+                  เกรดสุขศึกษา, 
+                  {% elif i == 'art' %}
+                  เกรดศิลปะ, 
+                  {% elif i == 'career' %}
+                  เกรดการงานอาชีพ, 
+                  {% elif i == 'langues' %}
+                  เกรดภาษาต่างประเทศ, 
+                  {% endif %}
+                {% endfor %}
+            </p>
+          </div> -->
+        </div>
+        <div class="col-12 col-md-12 col-lg-6 d-flex justify-content-end">
+          <div class="w-50">
+            <select class="form-select" name="predictResult" id="predictResult" onchange="leaveChange(this.value)">
+            <option value="1">ผลการทำนายข้อมูลทั้งหมด</option>
+            <option value="2">ผลการทำนายที่มีแนวโน้มสำเร็จการศึกษา</option>
+            <option value="3">ผลการทำนายที่มีแนวโน้มไม่สำเร็จการศึกษา</option>
+          </select>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    <!--Slide 1-->
+    <div class="mySlides">
+      <div class="customResultTable">
+        <p class="m-3">
+          <strong>แสดงผลแบบรายบุคคล</strong>
+        </p>
+        <div class="row">
+          <table class="table shadow" style="margin-left: auto; margin-right: auto;"  id="myTable">
+            <thead class="bg-light">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">รหัสนักศึกษา</th>
+                <th scope="col">ความน่าจะเป็นที่จะสำเร็จการศึกษา</th>
+                <th scope="col">ความน่าจะเป็นที่จะไม่สำเร็จการศึกษา</th>
+                <th scope="col">ผลลัพธ์</th>
+              </tr>
+            </thead>
+            <tbody id="overview">
+              {% for i in df %}
+                {% if i.status == 'Pass' %}
+                  <tr style="background-color: #B0E5BD4d;">
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.student_id }}</td>
+                    <td>{{ i.probability_pass}}&#37;</td>
+                    <td>{{ i.probability_fail }}&#37;</td>
+                    <th>
+                      มีแนวโน้มสำเร็จการศึกษา
+                    </th>
+                  </tr>
+                {% else %}
+                  <tr style="background-color: #FF646432;">
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.student_id }}</td>
+                    <td>{{ i.probability_pass}}&#37;</td>
+                    <td>{{ i.probability_fail }}&#37;</td>
+                    <th>
+                      มีแนวโน้มไม่สำเร็จการศึกษา
+                    </th>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+    </div>
+    <!--Slide 2-->
+    <div class="mySlides">
+      <div class="customResultTable">
+        <p class="m-3">
+          <strong>ข้อมูลนักศึกษาที่มีแนวโน้มสำเร็จการศึกษา</strong>
+        </p>
+        <div class="row">
+          <table class="table shadow" style="margin-left: auto; margin-right: auto;" id="myTable2">
+            <thead class="bg-light">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">รหัสนักศึกษา</th>
+                <th scope="col">ความน่าจะเป็นที่จะสำเร็จการศึกษา</th>
+                <th scope="col">ความน่าจะเป็นที่จะไม่สำเร็จการศึกษา</th>
+                <th scope="col">ผลลัพธ์</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in df %}
+              {% if i.status == 'Pass' %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ i.student_id }}</td>
+                  <td>{{ i.probability_pass}}&#37;</td>
+                  <td>{{ i.probability_fail }}&#37;</td>
+                  <th>
+                    มีแนวโน้มสำเร็จการศึกษา
+                  </th>
+                </tr>
+              {% endif %}
+                
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!--Slide 3-->
+    <div class="mySlides">
+      <div class="customResultTable">
+        <p class="m-3">
+          <strong>ข้อมูลนักศึกษาที่มีแนวโน้มไม่สำเร็จการศึกษา</strong>
+        </p>
+        <div class="row">
+          <table class="table shadow" style="margin-left: auto; margin-right: auto;" id="myTable3">
+            <thead class="bg-light">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">รหัสนักศึกษา</th>
+                <th scope="col">ความน่าจะเป็นที่จะสำเร็จการศึกษา</th>
+                <th scope="col">ความน่าจะเป็นที่จะไม่สำเร็จการศึกษา</th>
+                <th scope="col">ผลลัพธ์</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in df %}
+              {% if i.status == 'Fail' %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ i.student_id }}</td>
+                  <td>{{ i.probability_pass}}&#37;</td>
+                  <td>{{ i.probability_fail }}&#37;</td>
+                  <th>
+                    มีแนวโน้มไม่สำเร็จการศึกษา
+                  </th>
+                </tr>
+              {% endif %}
+                
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="container">
+        {% if branch.abbreviation == 'BIO' %}
+        <p class="text-dark text-start" style="font-size: 14px;">
+            ระบบนี้ใช้เทคนิค Random Forest ในการทำนาย <br>
+            ผ่านการทดสอบด้วยโปรแกรม Rapid miner Studio<br>
+            ใช้ข้อมูลในการฝึกโมเดลจำนวน 183 ข้อมูล และได้รับประสิทธิภาพค่าความแม่นยำ 83.74&#37;
+            
+        </p>
+        {% elif branch.abbreviation == 'CHEM' %}
+        <p class="text-dark text-start" style="font-size: 14px;">
+            ระบบนี้ใช้เทคนิค Random Forest ในการทำนาย <br>
+            ผ่านการทดสอบด้วยโปรแกรม Rapid miner Studio<br>
+            ใช้ข้อมูลในการฝึกโมเดลจำนวน 258 ข้อมูลและได้รับประสิทธิภาพค่าความแม่นยำ 86.37&#37;
+            
+        </p>
+        {% elif branch.abbreviation == 'DSSI' %}
+        <p class="text-dark text-start" style="font-size: 14px;">
+            ระบบนี้ใช้เทคนิค Random Forest ในการทำนาย <br>
+            ผ่านการทดสอบด้วยโปรแกรม Rapid miner Studio<br>
+            ใช้ข้อมูลในการฝึกโมเดลจำนวน 254 ข้อมูลและได้รับประสิทธิภาพค่าความแม่นยำ 87.70&#37;
+            
+        </p>
+        {% else %}
+        <p class="text-dark text-start" style="font-size: 14px;">
+            ระบบนี้ใช้เทคนิค Random Forest ในการทำนาย <br>
+            ผ่านการทดสอบด้วยโปรแกรม Rapid miner Studio<br>
+            ใช้ข้อมูลในการฝึกโมเดลจำนวน 206 ข้อมูลและได้รับประสิทธิภาพค่าความแม่นยำ 88.48&#37;
+            
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <script>
+    var x = document.getElementsByClassName("mySlides");
+    x[0].style.display = "block";
+
+    function leaveChange(data) {
+     switch (data) {
+      case "1": 
+        x[0].style.display = "block";
+        x[1].style.display = "none";
+        x[2].style.display = "none";
+      break;
+      case "2":
+        x[0].style.display = "none";
+        x[1].style.display = "block";
+        x[2].style.display = "none";
+      break;
+      case "3":
+        x[0].style.display = "none";
+        x[1].style.display = "none";
+        x[2].style.display = "block";
+      break;
+      default:
+        x[0].style.display = "block";
+      break;
+     }
+    }
+
+    $(document).ready(function () {
+      $('#myTable').DataTable(
+        {
+          language:{
+              "emptyTable": "ไม่มีข้อมูลในตาราง",
+              "info": "แสดงผล _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+              "infoEmpty": "แสดงผล 0 ถึง 0 จากทั้งหมด 0 รายการ",
+              "infoFiltered": "(กรองจากทั้งหมด _MAX_ รายการ)",
+              "lengthMenu": "แสดง _MENU_ รายการ",
+              "loadingRecords": "กำลังโหลด...",
+              "processing": "กำลังประมวลผล...",
+              "search": "ค้นหา:",
+              "zeroRecords": "ไม่พบรายการที่ตรงกับการค้นหา",
+              "paginate": {
+                "first": "หน้าแรก",
+                "last": "หน้าสุดท้าย",
+                "next": "ถัดไป",
+                "previous": "ก่อนหน้า"
+              }
+          }
+      }
+      );
+    });
+
+    $(document).ready(function () {
+      $('#myTable2').DataTable(
+        {
+          language:{
+              "emptyTable": "ไม่มีข้อมูลในตาราง",
+              "info": "แสดงผล _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+              "infoEmpty": "แสดงผล 0 ถึง 0 จากทั้งหมด 0 รายการ",
+              "infoFiltered": "(กรองจากทั้งหมด _MAX_ รายการ)",
+              "lengthMenu": "แสดง _MENU_ รายการ",
+              "loadingRecords": "กำลังโหลด...",
+              "processing": "กำลังประมวลผล...",
+              "search": "ค้นหา:",
+              "zeroRecords": "ไม่พบรายการที่ตรงกับการค้นหา",
+              "paginate": {
+                "first": "หน้าแรก",
+                "last": "หน้าสุดท้าย",
+                "next": "ถัดไป",
+                "previous": "ก่อนหน้า"
+              }
+          }
+      }
+      );
+    });
+    
+    $(document).ready(function () {
+      $('#myTable3').DataTable(
+        {
+          language:{
+              "emptyTable": "ไม่มีข้อมูลในตาราง",
+              "info": "แสดงผล _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+              "infoEmpty": "แสดงผล 0 ถึง 0 จากทั้งหมด 0 รายการ",
+              "infoFiltered": "(กรองจากทั้งหมด _MAX_ รายการ)",
+              "lengthMenu": "แสดง _MENU_ รายการ",
+              "loadingRecords": "กำลังโหลด...",
+              "processing": "กำลังประมวลผล...",
+              "search": "ค้นหา:",
+              "zeroRecords": "ไม่พบรายการที่ตรงกับการค้นหา",
+              "paginate": {
+                "first": "หน้าแรก",
+                "last": "หน้าสุดท้าย",
+                "next": "ถัดไป",
+                "previous": "ก่อนหน้า"
+              }
+          }
+      }
+      );
+    });
+  </script>
+</div>
+{% endblock %}

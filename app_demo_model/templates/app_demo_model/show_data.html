@@ -1,0 +1,95 @@
+{% extends 'app_general/components/base.html' %}
+{% load static %}
+{% block site_title %}ข้อมูลโมเดล{% endblock %}
+{% block content %}
+  <div class="container">
+      
+    <div class="container mt-3">
+      <div class="row mb-3">
+        <div class="col-12 col-lg-6">
+          <h3>ข้อมูลที่ใช้สำหรับสร้างโมเดลการทำนาย</h3>
+        </div>
+        <div class="col-12 col-lg-6 d-flex justify-content-end pe-3">
+          <h5>ข้อมูลทั้งหมด : {{ total }} ข้อมูล</h5>
+        </div>
+      </div>
+    </div>
+    <hr class="mb-3">
+    <div class="container"> 
+      {% if total < 1 %}
+        <div class="container w-50 d-flex align-items-center" style="height: 360px">
+          <div class="card bg-light shadow w-100 text-center p-5" style="height: 180px;">
+              <p>**ขณะนี้ยังไม่มีข้อมูลสำหรับสร้างโมเดล</p>
+              <a href="{% url 'upload' %}" class="mt-3">
+                  <span><i data-feather="chevrons-left"></i></span>
+                  <span>ไปยังหน้าอัปโหลดข้อมูลโมเดล</span>
+              </a>
+          </div>
+        </div>
+      {% else %}
+      <div class="container" style="min-height: 500px;">
+        <table class="table" id="myTable">
+          <thead class="bg-light" style="font-size: 14px;">
+            <th scope="col">สาขา</th>
+            <th scope="col">เกรดรับเข้า</th>
+            <th scope="col">เกรดปีที่1</th>
+            <th scope="col">ภาษาไทย</th>
+            <th scope="col">คณิตศาสตร์</th>
+            <th scope="col">วิทยาศาสตร์</th>
+            <th scope="col">สังคมศึกษา</th>
+            <th scope="col">สุขศึกษา</th>
+            <th scope="col">ศิลปะ</th>
+            <th scope="col">การงานอาชีพ</th>
+            <th scope="col">ภาษาต่างประเทศ</th>
+            <th scope="col">สถานะ</th>              
+          </thead>
+          <tbody>
+            {% for data in data %}
+                <tr>
+                  <td>{{ data.branch.abbreviation }}</td>
+                  <td>{{ data.admission_grade }}</td>
+                  <td>{{ data.gpa_year_1 }}</td>
+                  <td>{{ data.thai }}</td>
+                  <td>{{ data.math }}</td>
+                  <td>{{ data.sci }}</td>
+                  <td>{{ data.society }}</td>
+                  <td>{{ data.hygiene }}</td>
+                  <td>{{ data.art }}</td>
+                  <td>{{ data.career }}</td>
+                  <td>{{ data.language }}</td>
+                  <td>{{ data.status }}</td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>          
+      {% endif %}
+    </div>
+
+    <script>
+      $(document).ready(function () {
+        $('#myTable').DataTable(
+          {
+            language:{
+                "emptyTable": "ไม่มีข้อมูลในตาราง",
+                "info": "แสดงผล _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+                "infoEmpty": "แสดงผล 0 ถึง 0 จากทั้งหมด 0 รายการ",
+                "infoFiltered": "(กรองจากทั้งหมด _MAX_ รายการ)",
+                "lengthMenu": "แสดง _MENU_ รายการ",
+                "loadingRecords": "กำลังโหลด...",
+                "processing": "กำลังประมวลผล...",
+                "search": "ค้นหา:",
+                "zeroRecords": "ไม่พบรายการที่ตรงกับการค้นหา",
+                "paginate": {
+                  "first": "หน้าแรก",
+                  "last": "หน้าสุดท้าย",
+                  "next": "ถัดไป",
+                  "previous": "ก่อนหน้า"
+                }
+            }
+          }
+        );
+      });
+    </script>
+  </div>
+{% endblock %}
