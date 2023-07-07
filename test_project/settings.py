@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-lt+^myfca488-1*^j1@o(s6y(nwhk(0!c^rq6hs!02*s^^*ti7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['teerawatth64.pythonanywhere.com']
 
 
 # Application definition
@@ -80,9 +80,13 @@ WSGI_APPLICATION = 'test_project.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ubu',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
@@ -109,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'TH'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Bangkok'
 
